@@ -1,5 +1,5 @@
 # Python-Beginner-Projects
-8 basic Python projects made while learning. Includes  basic calculator, palindrome, and more.
+9 basic Python projects made while learning. Includes  basic calculator, palindrome, and more.
 | # | Project | Description | Key Concepts |
 | --- | --- | --- | --- |
 | 1 | `basic_calculator.py` | Command-line calculator for +, -, *, / | Input, Conditionals, Arithmetic |
@@ -10,7 +10,7 @@
 | 6 | `tempconvert.py` | Celsius to Fahrenheit converter | Math, User I/O |
 | 7 | `word_count.py` | Count words & characters in text | String methods |
 | 8 | `p2.py` | Practice problem for basics | Problem solving |
-|9| 'Create a professional rusume builder|rusume builder|
+|9| `Create a professional rusume builder|rusume builder|
 
 *How to Run*
 1. Download any .py file
