@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ResumeAI - Professional Resume Builder</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f5f7;color:#252525}
+header{background:white;padding:20px 6%;border-bottom:3px solid #ff7825}
+.logo{font-size:27px;font-weight:bold}.logo span{color:#ff7825}
+main{max-width:1150px;margin:25px auto;padding:15px}
+h1{font-size:27px}
+.intro{color:#666;line-height:1.6}
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{background:white;padding:22px;border-radius:12px;box-shadow:0 3px 15px #0000000b;min-width:0}
+label{display:block;font-size:13px;font-weight:bold;margin-top:13px}
+input,textarea{width:100%;padding:12px;margin-top:6px;border:1px solid #ddd;border-radius:7px;font:14px Arial}
+textarea{min-height:75px;resize:vertical}
+button{padding:12px 15px;border:0;border-radius:7px;background:#ff7825;color:white;font-weight:bold;cursor:pointer;margin-top:12px}
+button:hover{opacity:.85}
+.secondary{background:#292929}
+.resume{border:1px solid #ddd;padding:25px;min-height:500px;overflow-wrap:anywhere}
+.resume h1{margin-bottom:5px}
+.resume h3{color:#e96a18;border-bottom:1px solid #ddd;padding-bottom:7px;margin-top:25px}
+#result{white-space:pre-wrap;line-height:1.6;overflow-wrap:anywhere}
+.small{font-size:12px;color:#666;line-height:1.5}
+@media(max-width:750px){.layout{grid-template-columns:1fr}.card{padding:16px}}
+@media print{
+ @page{size:A4;margin:12mm}
+ header,#editor,.preview-title,footer{display:none!important}
+ body{background:white}
+ main{margin:0;padding:0}
+ .layout{display:block}
+ #previewCard{box-shadow:none;padding:0}
+ .resume{border:0;padding:0}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="logo">Resume<span>AI</span></div>
+</header>
+
+<main>
+<h1>Create Your Professional Resume</h1>
+<p class="intro">Fill in your details, improve your resume with AI and download it as PDF.</p>
+
+<div class="layout">
+
+<section class="card" id="editor">
+<h2>Enter Your Details</h2>
+
+<label>Full Name</label>
+<input id="name" placeholder="Your full name">
+
+<label>Professional Title</label>
+<input id="job" placeholder="Student / Software Developer">
+
+<label>Email</label>
+<input id="email" placeholder="your@email.com">
+
+<label>Phone</label>
+<input id="phone" placeholder="+91 9876543210">
+
+<label>Professional Summary</label>
+<textarea id="summary" placeholder="Write a short introduction about yourself"></textarea>
+
+<label>Education</label>
+<textarea id="education" placeholder="Course, college and passing year"></textarea>
+
+<label>Skills</label>
+<textarea id="skills" placeholder="HTML, CSS, Python, Communication"></textarea>
+
+<label>Experience / Projects</label>
+<textarea id="experience" placeholder="Internship, work experience or projects"></textarea>
+
+<button onclick="updateResume()">Update Resume</button>
+<button class="secondary" onclick="window.print()">Download / Save PDF</button>
+
+<h3>AI Career Assistant</h3>
+<p class="small">Get resume-writing suggestions and improve your professional summary.</p>
+<div id="result">Your AI suggestions will appear here.</div>
+</section>
+
+<section class="card" id="previewCard">
+<h2 class="preview-title">Live Resume Preview</h2>
+
+<div class="resume" id="resume">
+<h1>Your Name</h1>
+<p>Professional Title</p>
+<p>Email | Phone</p>
+<h3>Professional Summary</h3>
+<p>Add your summary here.</p>
+<h3>Education</h3>
+<p>Add your education here.</p>
+<h3>Skills</h3>
+<p>Add your skills here.</p>
+<h3>Experience / Projects</h3>
+<p>Add your experience here.</p>
+</div>
+</section>
+
+</div>
+</main>
+
+<footer style="text-align:center;padding:25px;color:#777">
+ResumeAI - Build your future professionally
+</footer>
+
+<script>
+function val(id){
+ return document.getElementById(id).value.trim();
+}
+
+function safe(text){
+ return String(text||"").replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",
+  '"':"&quot;","'":"&#39;"
+ }[c]));
+}
+
+function updateResume(){
+ document.getElementById("resume").innerHTML=`
+ <h1>${safe(val("name")||"Your Name")}</h1>
+ <p>${safe(val("job")||"Professional Title")}</p>
+ <p>${safe(val("email"))}${val("phone")?" | "+safe(val("phone")):""}</p>
+ <h3>Professional Summary</h3>
+ <p>${safe(val("summary")||"Add your summary here.")}</p>
+ <h3>Education</h3>
+ <p>${safe(val("education")||"Add your education here.")}</p>
+ <h3>Skills</h3>
+ <p>${safe(val("skills")||"Add your skills here.")}</p>
+ <h3>Experience / Projects</h3>
+ <p>${safe(val("experience")||"Add your experience here.")}</p>`;
+}
+
+document.querySelectorAll("input,textarea").forEach(el=>{
+ el.addEventListener("input",updateResume);
+});
+
+async function askAI(){
+ const result=document.getElementById("result");
+ result.textContent="Please wait...";
+
+ const data={
+  name:val("name"),
+  job:val("job"),
+  summary:val("summary"),
+  education:val("education"),
+  skills:val("skills"),
+  experience:val("experience")
+ };
+
+ try{
+  const response=await fetch("/ai",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify(data)
+  });
+
+  const answer=await response.json();
+  if(!response.ok) throw new Error(answer.error||"AI request failed");
+
+  result.textContent=answer.result;
+
+  if(answer.summary){
+   const button=document.createElement("button");
+   button.textContent="Use Improved Summary";
+   button.onclick=()=>{
+    document.getElementById("summary").value=answer.summary;
+    updateResume();
+   };
+   result.appendChild(document.createElement("br"));
+   result.appendChild(button);
+  }
+ }catch(error){
+  result.textContent=error.message;
+ }
+}
+
+updateResume();
+</script>
+</body>
+</html>
+
+
+                        
