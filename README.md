@@ -10,6 +10,7 @@
 | 6 | `tempconvert.py` | Celsius to Fahrenheit converter | Math, User I/O |
 | 7 | `word_count.py` | Count words & characters in text | String methods |
 | 8 | `p2.py` | Practice problem for basics | Problem solving |
+|9| 'Create a professional rusume builder|rusume builder|
 
 *How to Run*
 1. Download any .py file
